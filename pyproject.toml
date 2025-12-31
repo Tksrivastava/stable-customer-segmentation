@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "stable-customer-segmentation"
+version = "0.1.0"
+description = "Core ML utilities for customer segmentation"
+readme = "README.md"
+requires-python = ">=3.11,<3.12"
+license = { text = "MIT" }
+
+authors = [
+    { name = "Tanul Kumar Srivastava" }
+]
+
+dependencies = [
+    "numpy==1.26.4",
+    "pandas==2.2.2",
+    "scikit-learn==1.4.2",
+    "tensorflow==2.15.1",
+    "kaggle==1.5.16",
+    "openpyxl==3.1.2",
+    "python-dotenv==1.0.1",
+    "plotly==5.24.1",
+    "nbformat==5.10.4"
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["core*"]
