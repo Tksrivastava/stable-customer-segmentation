@@ -1,6 +1,8 @@
 import os
-from pathlib import Path
 from typing import List
+import tensorflow as tf
+from pathlib import Path
+import plotly.graph_objects as go
 
 import pandas as pd
 from dotenv import load_dotenv
@@ -173,3 +175,54 @@ class CustomerEligibilityFilter:
         )
 
         return eligible_customers.tolist()
+    
+class PlotHistory(object):
+    """
+Utility class for visualizing training history of TensorFlow / Keras models.
+
+This class provides a lightweight wrapper around a `tf.keras.callbacks.History`
+object and generates interactive loss curves using Plotly. It is intended for
+quick inspection of training dynamics such as convergence behavior and
+overfitting.
+
+Currently supported metrics:
+- Training loss (`loss`)
+- Validation loss (`val_loss`), if available
+
+The visualization is rendered as an interactive Plotly figure with epoch-wise
+traces, suitable for exploratory analysis in notebooks or local development
+environments.
+
+Parameters
+----------
+history : tf.keras.callbacks.History, optional
+    History object returned by `model.fit`. Must contain a `history` attribute
+    with recorded loss values.
+
+Notes
+-----
+- This utility assumes that the model was compiled with a loss function.
+- Validation loss is plotted only if `val_loss` is present in the history.
+- The class does not perform input validation and will raise an error if an
+    invalid or incomplete History object is provided.
+- Intended for visualization only; it does not return numerical results.
+"""
+    def __init__(self, history: tf.keras.callbacks.History = None):
+        self.history = history
+    def plot_history(self):
+        hist = self.history.history
+        epochs = list(range(1, len(hist['loss']) + 1))
+
+        fig = go.Figure()
+
+        # Training loss
+        fig.add_trace(go.Scatter(x=epochs, y=hist['loss'], mode='lines+markers', name='Train Loss'))
+
+        # Validation loss (if exists)
+        if 'val_loss' in hist:
+            fig.add_trace(go.Scatter(x=epochs, y=hist['val_loss'], mode='lines+markers', name='Validation Loss'))
+
+        fig.update_layout(title='History', xaxis_title='Epoch',
+                        yaxis_title='Loss', template='plotly_white', hovermode='x unified')
+        fig.show()
+        return fig

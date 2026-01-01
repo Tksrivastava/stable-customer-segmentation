@@ -49,6 +49,17 @@ IF ERRORLEVEL 1 (
     exit /b 1
 )
 
+REM --------------------------------------------------
+REM Step 4: Run autoencoder model training
+REM --------------------------------------------------
+echo [INFO] Running autoencoder training pipeline...
+python autoencoder-training-pipeline.py
+
+IF ERRORLEVEL 1 (
+    echo [ERROR] Autoencoder training pipeline failed.
+    exit /b 1
+)
+
 echo ==================================================
 echo  Pipeline completed successfully
 echo ==================================================
