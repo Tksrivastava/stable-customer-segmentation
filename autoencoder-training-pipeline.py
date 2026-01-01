@@ -59,7 +59,7 @@ def main() -> None:
     model = AutoEncoderModelArchitecture(
         seed=42,
         input_space=x.shape[1],
-        latent_space=10
+        latent_space=5
     )
 
     model.summary()

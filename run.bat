@@ -60,6 +60,28 @@ IF ERRORLEVEL 1 (
     exit /b 1
 )
 
+REM --------------------------------------------------
+REM Step 4: Run clustering model training
+REM --------------------------------------------------
+echo [INFO] Running clustering training pipeline...
+python clustering-training-pipeline.py
+
+IF ERRORLEVEL 1 (
+    echo [ERROR] Clustering training pipeline failed.
+    exit /b 1
+)
+
+REM --------------------------------------------------
+REM Step 4: Run clustering inference and insights 
+REM --------------------------------------------------
+echo [INFO] Running clustering inference pipeline...
+python clustering-inference-pipeline.py
+
+IF ERRORLEVEL 1 (
+    echo [ERROR] Clustering inference pipeline failed.
+    exit /b 1
+)
+
 echo ==================================================
 echo  Pipeline completed successfully
 echo ==================================================
