@@ -121,6 +121,22 @@ class AutoEncoderModelArchitecture:
     
     def get_encoded_input(self, x):
         return self.encoder.predict(x)
-    def save(self, path:str):
+
+    def save(self, path: str) -> None:
         self.model.save(path)
-        return None
+
+    @classmethod
+    def load(cls, path: str) -> "AutoEncoderModelArchitecture":
+        model = tf.keras.models.load_model(path)
+
+        input_space = model.input_shape[-1]
+        latent_space = model.get_layer("latent_space").output_shape[-1]
+
+        obj = cls(
+            seed=0,
+            input_space=input_space,
+            latent_space=latent_space
+        )
+
+        obj.model = model
+        return obj
