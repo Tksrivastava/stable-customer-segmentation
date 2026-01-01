@@ -13,7 +13,7 @@ logger_factory = LoggerFactory()
 logger = logger_factory.get_logger(__name__)
 
 
-BASE_PATH = Path(__file__).resolve().parent
+BASE_PATH = Path(__file__).resolve().parents[0]
 
 DATASET_PATH = BASE_PATH / "dataset" / "features.csv"
 

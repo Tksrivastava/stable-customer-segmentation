@@ -14,7 +14,7 @@ logger_factory = LoggerFactory()
 logger = logger_factory.get_logger(__name__)
 
 
-BASE_PATH = Path(__file__).resolve().parent
+BASE_PATH = Path(__file__).resolve().parents[0]
 FEATURES_PATH = BASE_PATH / "dataset" / "features.csv"
 ARTIFACT_PATH = BASE_PATH / "artifacts"
 
@@ -74,6 +74,12 @@ def main() -> None:
         validation_split=0.35,
         shuffle=True
     )
+    
+    for epoch in range(len(history.history["loss"])):
+        metrics_str = " | ".join(f"{metric}={values[epoch]:.6f}"
+                                 for metric, values in history.history.items())
+        logger.info(f"Epoch {epoch + 1:02d} | {metrics_str}")
+
 
     logger.info("Training completed")
 
