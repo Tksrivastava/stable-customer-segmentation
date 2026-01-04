@@ -191,7 +191,7 @@ This version is **professional, clear, and production-appropriate**.
 python -m venv .venv
 ````
 
-### 2. Run the pipeline
+### 2. Run the full pipeline
 
 ```bash
 run.bat
