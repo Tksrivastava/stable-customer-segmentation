@@ -1,198 +1,387 @@
-# Stable Customer Segmentation in FMCG Retail  
-### A Representation-Learning–First Clustering System
+# **Stable Customer Segmentation in FMCG Retail**
 
-This repository contains a **production-oriented case study** on building **stable, meaningful customer clusters** in an FMCG retail setting.
+### *A Representation-Learning-First Clustering System*
 
-Instead of clustering directly on high-dimensional engineered features, this project demonstrates how **learning compact latent representations using an Autoencoder** can dramatically improve cluster stability, health, and downstream usability.
-
-The focus is **not** on algorithm novelty, but on **system behavior under real-world constraints**:
-- Feature growth
-- Temporal drift
-- Eligibility filtering
-- Reproducibility
-- Inference consistency
+> **Author:** Tanul Kumar Srivastava
+> **Medium Deep-Dive:**
+> [https://medium.com/aimonks/why-most-retail-customer-clusters-collapse-in-production-and-how-i-fixed-mine-122a412ceccf](https://medium.com/aimonks/why-most-retail-customer-clusters-collapse-in-production-and-how-i-fixed-mine-122a412ceccf)
 
 ---
 
-## Motivation
+## 📌 What this project solves
 
-In real FMCG systems, traditional clustering pipelines frequently fail due to:
+In real FMCG and retail systems, customer segmentation **breaks down in production** due to:
 
-- Degrading cluster quality as feature space grows  
-- Extremely small or fragmented clusters  
-- False homogeneity at aggregate levels  
-- Continuous cluster reshuffling (“cluster explosion”) during retraining  
+* Feature explosion over time
+* Data drift across retraining cycles
+* Unstable cluster assignments
+* Extremely high noise ratios
+* Poor reproducibility
 
-This repository explores a practical alternative:
+Most clustering systems are built as **one-off experiments**, not **long-running production systems**.
 
-> **Learn a stable behavioral representation first, then cluster.**
+This repository demonstrates a **production-oriented alternative**:
 
----
+> **Learn stable behavioral representations first → then cluster**
 
-## High-Level Approach
+Instead of clustering on raw engineered features, we:
 
-1. Filter retailers using tenure and activity-based eligibility rules  
-2. Engineer behavior-driven retail features (seasonality, stability, entropy, growth)  
-3. Establish a raw-feature clustering baseline  
-4. Train a deterministic Autoencoder for representation learning  
-5. Cluster retailers in latent space using density-based methods  
-6. Compare raw vs latent clustering on:
-   - Cluster count
-   - Noise ratio
-   - Size distribution
-   - Stability characteristics  
+1. Learn compact latent embeddings using a deterministic Autoencoder
+2. Cluster in latent space using HDBSCAN
+3. Compare raw-feature vs latent-space behavior across stability, noise, and size distribution
+
+This is **not** about inventing new algorithms.
+It is about building **clustering that survives real-world retraining cycles**.
 
 ---
 
-## Dataset
+## 🧠 System Architecture
+
+```
+Raw FMCG Transactions
+        │
+        ▼
+Eligibility Filtering
+        │
+        ▼
+Retailer Feature Engineering
+        │
+        ├───────────────► Raw Feature Clustering (Baseline)
+        │
+        ▼
+Robust Scaling
+        │
+        ▼
+Autoencoder (Representation Learning)
+        │
+        ▼
+Latent Space Embeddings
+        │
+        ▼
+HDBSCAN Clustering
+        │
+        ▼
+Cluster Assignments + Strengths
+        │
+        ▼
+Cluster Analytics & Stability Metrics
+```
+
+---
+
+## 📊 Dataset
 
 The project uses a **synthetic-style, anonymized FMCG retail dataset** published on Kaggle.
 
-- Monthly aggregated sales quantities  
-- `(shop_id, product_id, year, month)` granularity  
-- Privacy-preserving transformations applied  
-- No real-world identifiers or customer-level data  
+**Dataset:**
+[https://www.kaggle.com/datasets/tanulkumarsrivastava/sales-dataset](https://www.kaggle.com/datasets/tanulkumarsrivastava/sales-dataset)
 
-**Dataset link:**  
-https://www.kaggle.com/datasets/tanulkumarsrivastava/sales-dataset
+**Structure**
 
-This dataset is intended for **research, learning, and benchmarking**, not operational deployment.
+* Monthly aggregated sales
+* `(shop_id, product_id, year, month)`
+* Privacy-preserving transformations
+* No real customer or retailer data
+
+This dataset is intended for:
+
+* Algorithm benchmarking
+* Feature engineering
+* Clustering system design
 
 ---
 
-## Repository Structure
+## 🗂 Repository Structure
 
 ```
-
-.
-├── core/
-│   ├── features.py              # Feature engineering logic
-│   ├── model.py                 # Autoencoder architecture
-│   ├── utils.py                 # Data fetching, filtering, plotting utilities
-│   └── logging.py               # Centralized logging configuration
+stable-customer-segmentation/
 │
-├── artifacts/
-│   ├── autoencoder-model.keras  # Trained autoencoder
-│   ├── feature-scaler.pkl       # Feature scaler
-│   ├── hdbscan-latent.pkl       # Latent-space clustering model
-│   ├── hdbscan-raw.pkl          # Raw-feature clustering model
-│   ├── cluster_insights.csv     # Cluster-level statistics
-│   └── loss-plot.png            # Autoencoder training curve
+├── core/
+│   ├── features.py        # Retailer behavior feature engineering
+│   ├── model.py           # Autoencoder architecture
+│   ├── utils.py           # Data loading, filtering, plots
+│   └── logging.py         # Centralized logging
+│
+├── artifacts/             # Trained models and outputs
+│   ├── autoencoder-model.keras
+│   ├── feature-scaler.pkl
+│   ├── hdbscan-latent.pkl
+│   ├── hdbscan-raw.pkl
+│   ├── cluster_insights.csv
+│   └── loss-plot.png
 │
 ├── feature-preparation-pipeline.py
 ├── autoencoder-training-pipeline.py
 ├── clustering-training-pipeline.py
 ├── clustering-inference-pipeline.py
+│
+├── run.bat
 └── README.md
+```
 
-````
+This is structured like a **real ML system**, not a notebook dump:
+
+* Reusable modules
+* Explicit pipelines
+* Model artifacts
+* Inference scripts
 
 ---
 
-## Pipelines Overview
+## ⚙️ How to Run Locally
 
-### 1. Feature Preparation
+### 1️⃣ Clone the repository
+
+```bash
+git clone https://github.com/Tksrivastava/stable-customer-segmentation.git
+cd stable-customer-segmentation
+```
+
+---
+
+### 2️⃣ Create virtual environment
+
+```bash
+python -m venv .venv
+```
+
+Activate:
+
+**Windows**
+
+```bash
+.venv\Scripts\activate
+```
+
+**Linux / Mac**
+
+```bash
+source .venv/bin/activate
+```
+
+---
+
+### 3️⃣ Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+---
+
+### 4️⃣ Run full pipeline
+
+```bash
+run.bat
+```
+
+This executes:
+
+1. Feature generation
+2. Autoencoder training
+3. Raw + latent clustering
+4. Cluster analytics
+
+All models and outputs are saved into `/artifacts`.
+
+---
+
+## 🔁 Pipelines Explained
+
+### **1. Feature Preparation**
+
 ```bash
 python feature-preparation-pipeline.py
-````
+```
+
+What happens:
 
 * Downloads dataset from Kaggle
-* Applies eligibility filtering
-* Generates retailer-level clustering features
+* Filters retailers using:
+
+  * Minimum activity
+  * Tenure thresholds
+* Builds **behavioral features**:
+
+  * Stability
+  * Entropy
+  * Growth
+  * Seasonality
+  * Volume consistency
+
+These are not naive aggregates — they are **representation-learning-ready signals**.
 
 ---
 
-### 2. Autoencoder Training
+### **2. Autoencoder Training**
 
 ```bash
 python autoencoder-training-pipeline.py
 ```
 
-* Scales features using RobustScaler
-* Trains a deterministic autoencoder
-* Saves model, scaler, and training diagnostics
+What happens:
+
+* Robust scaling
+* Deterministic Autoencoder training
+* Loss tracking
+* Model persistence
+
+Outputs:
+
+* Trained encoder/decoder
+* Scaler
+* Training curve
+
+This creates a **stable latent behavioral space**.
 
 ---
 
-### 3. Clustering Training
+### **3. Clustering Training**
 
 ```bash
 python clustering-training-pipeline.py
 ```
 
-* Clusters retailers in:
+Two clustering strategies are trained:
 
-  * Raw feature space (baseline)
-  * Latent representation space
-* Saves clustering artifacts
+| Strategy             | Purpose             |
+| -------------------- | ------------------- |
+| Raw Feature HDBSCAN  | Baseline            |
+| Latent Space HDBSCAN | Production approach |
+
+Both are saved for comparison and inference.
 
 ---
 
-### 4. Clustering Inference & Insights
+### **4. Inference & Analytics**
 
 ```bash
 python clustering-inference-pipeline.py
 ```
 
-* Assigns cluster labels and strengths
-* Generates cluster-level statistics for analysis
+Generates:
+
+* Cluster labels
+* Membership strength
+* Cluster sizes
+* Noise ratios
+* Distribution reports
 
 ---
 
-## Key Results (Summary)
+## 📈 Key Results
 
-| Method                  | Clusters | Noise Ratio |
-| ----------------------- | -------- | ----------- |
-| Raw Feature Clustering  | 2        | ~99.6%      |
-| Latent Space Clustering | 4        | ~21.5%      |
+| Method       | Clusters | Noise  |
+| ------------ | -------- | ------ |
+| Raw Features | 2        | ~99.6% |
+| Latent Space | 4        | ~21.5% |
 
-Latent-space clustering produces:
-
-* More balanced clusters
-* Significantly lower noise
-* Better behavioral separation
-* Improved stability across retraining
+This is **not** a tuning trick — it is a **systemic effect** of learning representations before clustering.
 
 ---
 
-## Design Principles
+## 🧩 Why Autoencoder + HDBSCAN?
 
-* **Systems over notebooks**
-* **Stability over one-time accuracy**
-* **Reproducibility over speed**
-* **Behavioral features over raw aggregates**
-* **Deferred interpretability, not ignored interpretability**
+Retail data is:
+
+* High dimensional
+* Sparse
+* Noisy
+* Non-linear
+
+Autoencoders:
+
+* Compress signal
+* Remove noise
+* Learn invariant behavioral structure
+
+HDBSCAN:
+
+* Handles density variation
+* Naturally models noise
+* Works well in learned manifolds
+
+This combination is **production-grade for segmentation**.
 
 ---
 
-## Disclaimer
+## 🧪 Making this Production Ready
 
-This project is a **technical case study**.
-Cluster labels and interpretations are illustrative and do not represent real retailers or business entities.
+This repository is already **architecture-ready** for real systems.
 
----
+Here is how you would evolve it:
 
-## Related Writing
+### 🔹 Add MLflow
 
-A detailed technical write-up explaining the motivation, system design, and results of this project is available as a Medium article:
+You can log:
 
-👉 *[Link to Medium article]*
+* Autoencoder versions
+* Clustering models
+* Feature scalers
+* Metrics (noise %, cluster count, stability)
 
----
+Example:
 
-Here is the **clean, correct, copy-paste ready Markdown** version you should add to your `README.md`.
-
-This version is **professional, clear, and production-appropriate**.
-
-## How to Use
-
-### 1. Create a virtual environment
-```bash
-python -m venv .venv
-````
-
-### 2. Run the full pipeline
-
-```bash
-run.bat
+```python
+mlflow.log_model(autoencoder, "encoder")
+mlflow.log_metric("noise_ratio", noise)
 ```
+
+---
+
+### 🔹 Add Feature Store / DB
+
+Replace:
+
+```python
+df = load_from_csv()
+```
+
+With:
+
+* Snowflake
+* BigQuery
+* Postgres
+* Feast Feature Store
+
+This allows:
+
+* Backfills
+* Time-travel
+* Reproducible training
+
+---
+
+### 🔹 Add Batch Inference
+
+The inference pipeline already supports:
+
+* New retailers
+* New months
+* Re-scoring into existing clusters
+
+You only need:
+
+* A scheduler (Airflow / Dagster)
+* A data sink (warehouse / API)
+
+---
+
+## 🧠 What this repo demonstrates
+
+This project shows how to think like a **production data scientist**:
+
+* Not “best silhouette score”
+* Not “best k-means”
+* But **long-term stability, drift resistance, and cluster usability**
+
+This is exactly how **real retail segmentation platforms** are built.
+
+---
+
+## 📚 Deep Technical Explanation
+
+Read the full system breakdown here:
+👉 [https://medium.com/aimonks/why-most-retail-customer-clusters-collapse-in-production-and-how-i-fixed-mine-122a412ceccf](https://medium.com/aimonks/why-most-retail-customer-clusters-collapse-in-production-and-how-i-fixed-mine-122a412ceccf)
+
+---
