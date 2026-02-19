@@ -22,7 +22,12 @@ def main() -> None:
     logger.info("Starting retail clustering feature generation pipeline")
 
     logger.info("Ensuring dataset availability via Kaggle fetch")
-    FetchFromKaggle().download()
+    try:
+        FetchFromKaggle().download()
+        logger.info("Works locally")
+    except Exception as e:
+        logger.info(e)
+        logger.info("Fails in Docker image")
 
     logger.info("Loading raw transactional data from %s", DATASET_PATH)
     df = pd.read_csv(DATASET_PATH)

@@ -115,7 +115,11 @@ stable-customer-segmentation/
 ├── clustering-training-pipeline.py
 ├── clustering-inference-pipeline.py
 │
+├── Dockerfile
+├── .dockerignore
+│
 ├── run.bat
+├── run.sh
 └── README.md
 ```
 
@@ -385,3 +389,23 @@ Read the full system breakdown here:
 👉 [https://medium.com/aimonks/why-most-retail-customer-clusters-collapse-in-production-and-how-i-fixed-mine-122a412ceccf](https://medium.com/aimonks/why-most-retail-customer-clusters-collapse-in-production-and-how-i-fixed-mine-122a412ceccf)
 
 ---
+
+## 🐳 Running the Project with Docker
+
+You can build and run the application using Docker from **PowerShell** or a **WSL terminal**.
+
+### 1️⃣ Build Docker Image
+
+```bash
+docker build -t customer-segmentation:latest .
+````
+
+### 2️⃣ Run the Container
+
+```bash
+docker run --env-file .env customer-segmentation
+```
+
+> Make sure the `.env` file exists in the project root and contains all required environment variables before running the container.
+
+```
