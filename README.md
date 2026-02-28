@@ -94,33 +94,32 @@ This dataset is intended for:
 ## 🗂 Repository Structure
 
 ```
-stable-customer-segmentation/
-│
-├── core/
-│   ├── features.py        # Retailer behavior feature engineering
-│   ├── model.py           # Autoencoder architecture
-│   ├── utils.py           # Data loading, filtering, plots
-│   └── logging.py         # Centralized logging
-│
-├── artifacts/             # Trained models and outputs
-│   ├── autoencoder-model.keras
-│   ├── feature-scaler.pkl
-│   ├── hdbscan-latent.pkl
-│   ├── hdbscan-raw.pkl
-│   ├── cluster_insights.csv
-│   └── loss-plot.png
-│
-├── feature-preparation-pipeline.py
-├── autoencoder-training-pipeline.py
-├── clustering-training-pipeline.py
-├── clustering-inference-pipeline.py
-│
-├── Dockerfile
-├── .dockerignore
-│
-├── run.bat
-├── run.sh
-└── README.md
+├── 📁 artifacts
+│   ├── 📄 autoencoder-model.keras
+│   ├── 📄 cluster_insights.csv
+│   ├── 📄 cluster_predictions.csv
+│   ├── 📄 feature-scaler.pkl
+│   ├── 📄 hdbscan-latent.pkl
+│   ├── 📄 hdbscan-raw.pkl
+│   ├── 🖼️ loss-plot.png
+│   └── 📄 raw-feature-scaler.pkl
+├── 📁 core
+│   ├── 🐍 __init__.py
+│   ├── 🐍 features.py
+│   ├── 🐍 logging.py
+│   ├── 🐍 model.py
+│   └── 🐍 utils.py
+├── ⚙️ .env.example
+├── ⚙️ .gitignore
+├── 📄 LICENSE
+├── 📝 README.md
+├── 🐍 autoencoder-training-pipeline.py
+├── 🐍 clustering-inference-pipeline.py
+├── 🐍 clustering-training-pipeline.py
+├── 🐍 feature-preparation-pipeline.py
+├── ⚙️ pyproject.toml
+├── 📄 requirement.txt
+└── 📄 run.sh
 ```
 
 This is structured like a **real ML system**, not a notebook dump:
@@ -389,23 +388,3 @@ Read the full system breakdown here:
 👉 [https://medium.com/aimonks/why-most-retail-customer-clusters-collapse-in-production-and-how-i-fixed-mine-122a412ceccf](https://medium.com/aimonks/why-most-retail-customer-clusters-collapse-in-production-and-how-i-fixed-mine-122a412ceccf)
 
 ---
-
-## 🐳 Running the Project with Docker
-
-You can build and run the application using Docker from **PowerShell** or a **WSL terminal**.
-
-### 1️⃣ Build Docker Image
-
-```bash
-docker build -t customer-segmentation:latest .
-````
-
-### 2️⃣ Run the Container
-
-```bash
-docker run --env-file .env customer-segmentation
-```
-
-> Make sure the `.env` file exists in the project root and contains all required environment variables before running the container.
-
-```
