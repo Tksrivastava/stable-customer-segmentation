@@ -1,22 +1,21 @@
-# **Stable Customer Segmentation in FMCG Retail**
+# Stable Customer Segmentation in FMCG Retail
 
 ### *A Representation-Learning-First Clustering System*
 
 > **Author:** Tanul Kumar Srivastava
-> **Medium Deep-Dive:**
-> [https://medium.com/aimonks/why-most-retail-customer-clusters-collapse-in-production-and-how-i-fixed-mine-122a412ceccf](https://medium.com/aimonks/why-most-retail-customer-clusters-collapse-in-production-and-how-i-fixed-mine-122a412ceccf)
+> **Medium Deep-Dive:** [Why Most Retail Customer Clusters Collapse in Production — and How I Fixed Mine](https://medium.com/aimonks/why-most-retail-customer-clusters-collapse-in-production-and-how-i-fixed-mine-122a412ceccf)
 
 ---
 
-## 📌 What this project solves
+## What This Project Solves
 
 In real FMCG and retail systems, customer segmentation **breaks down in production** due to:
 
-* Feature explosion over time
-* Data drift across retraining cycles
-* Unstable cluster assignments
-* Extremely high noise ratios
-* Poor reproducibility
+- Feature explosion over time
+- Data drift across retraining cycles
+- Unstable cluster assignments
+- Extremely high noise ratios
+- Poor reproducibility
 
 Most clustering systems are built as **one-off experiments**, not **long-running production systems**.
 
@@ -24,18 +23,17 @@ This repository demonstrates a **production-oriented alternative**:
 
 > **Learn stable behavioral representations first → then cluster**
 
-Instead of clustering on raw engineered features, we:
+Instead of clustering on raw engineered features, the system:
 
-1. Learn compact latent embeddings using a deterministic Autoencoder
-2. Cluster in latent space using HDBSCAN
-3. Compare raw-feature vs latent-space behavior across stability, noise, and size distribution
+1. Learns compact latent embeddings via a deterministic Autoencoder
+2. Clusters in latent space using HDBSCAN
+3. Compares raw-feature vs. latent-space behavior across stability, noise, and cluster size distribution
 
-This is **not** about inventing new algorithms.
-It is about building **clustering that survives real-world retraining cycles**.
+This is **not** about inventing new algorithms — it is about building **clustering that survives real-world retraining cycles**.
 
 ---
 
-## 🧠 System Architecture
+## System Architecture
 
 ```
 Raw FMCG Transactions
@@ -61,7 +59,7 @@ Latent Space Embeddings
 HDBSCAN Clustering
         │
         ▼
-Cluster Assignments + Strengths
+Cluster Assignments + Membership Strengths
         │
         ▼
 Cluster Analytics & Stability Metrics
@@ -69,322 +67,266 @@ Cluster Analytics & Stability Metrics
 
 ---
 
-## 📊 Dataset
+## Dataset
 
-The project uses a **synthetic-style, anonymized FMCG retail dataset** published on Kaggle.
+This project uses a **synthetic-style, anonymized FMCG retail dataset** published on Kaggle.
 
-**Dataset:**
-[https://www.kaggle.com/datasets/tanulkumarsrivastava/sales-dataset](https://www.kaggle.com/datasets/tanulkumarsrivastava/sales-dataset)
+**Dataset:** [tanulkumarsrivastava/sales-dataset](https://www.kaggle.com/datasets/tanulkumarsrivastava/sales-dataset)
 
-**Structure**
+The dataset contains monthly aggregated sales with the schema `(shop_id, product_id, year, month)`, with privacy-preserving transformations applied — no real customer or retailer data is included.
 
-* Monthly aggregated sales
-* `(shop_id, product_id, year, month)`
-* Privacy-preserving transformations
-* No real customer or retailer data
-
-This dataset is intended for:
-
-* Algorithm benchmarking
-* Feature engineering
-* Clustering system design
+Intended use cases:
+- Algorithm benchmarking
+- Feature engineering experiments
+- Clustering system design
 
 ---
 
-## 🗂 Repository Structure
+## Repository Structure
 
 ```
-├── 📁 artifacts
-│   ├── 📄 autoencoder-model.keras
-│   ├── 📄 cluster_insights.csv
-│   ├── 📄 cluster_predictions.csv
-│   ├── 📄 feature-scaler.pkl
-│   ├── 📄 hdbscan-latent.pkl
-│   ├── 📄 hdbscan-raw.pkl
-│   ├── 🖼️ loss-plot.png
-│   └── 📄 raw-feature-scaler.pkl
-├── 📁 core
-│   ├── 🐍 __init__.py
-│   ├── 🐍 features.py
-│   ├── 🐍 logging.py
-│   ├── 🐍 model.py
-│   └── 🐍 utils.py
-├── ⚙️ .env.example
-├── ⚙️ .gitignore
-├── 📄 LICENSE
-├── 📝 README.md
-├── 🐍 autoencoder-training-pipeline.py
-├── 🐍 clustering-inference-pipeline.py
-├── 🐍 clustering-training-pipeline.py
-├── 🐍 feature-preparation-pipeline.py
-├── ⚙️ pyproject.toml
-├── 📄 requirement.txt
-└── 📄 run.sh
+stable-customer-segmentation/
+├── core/
+│   ├── __init__.py
+│   ├── features.py               # RetailClusteringFeatureBuilder
+│   ├── logging.py                # LoggerFactory
+│   ├── model.py                  # AutoEncoderModelArchitecture
+│   └── utils.py
+├── autoencoder-training-pipeline.py
+├── clustering-inference-pipeline.py
+├── clustering-training-pipeline.py
+├── feature-preparation-pipeline.py
+├── .env.example
+├── .gitignore
+├── LICENSE
+├── pyproject.toml
+├── requirement.txt
+├── run.sh
+└── README.md
 ```
 
-This is structured like a **real ML system**, not a notebook dump:
+> **Note:** The `/artifacts` folder (trained models, scalers, outputs) is not included in this repository due to file size. Running the full pipeline via `run.sh` regenerates all artifacts locally.
 
-* Reusable modules
-* Explicit pipelines
-* Model artifacts
-* Inference scripts
+This is structured like a **real ML system**, not a notebook dump — reusable modules, explicit pipelines, and dedicated inference scripts.
 
 ---
 
-## ⚙️ How to Run Locally
+## Getting Started
 
-### 1️⃣ Clone the repository
+### Prerequisites
+
+- Python `>=3.11, <3.12`
+- A [Kaggle API key](https://www.kaggle.com/docs/api) for dataset download
+
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/Tksrivastava/stable-customer-segmentation.git
 cd stable-customer-segmentation
 ```
 
----
+### 2. Set up environment variables
 
-### 2️⃣ Create virtual environment
+```bash
+cp .env.example .env
+```
+
+Edit `.env` and fill in your Kaggle credentials:
+
+```env
+KAGGLE_USERNAME="your_username"
+KAGGLE_KEY="your_api_key"
+KAGGLE_DATASET="tanulkumarsrivastava/sales-dataset/"
+```
+
+### 3. Create and activate a virtual environment
 
 ```bash
 python -m venv .venv
 ```
 
-Activate:
-
-**Windows**
-
-```bash
-.venv\Scripts\activate
-```
-
-**Linux / Mac**
-
+**Linux / macOS**
 ```bash
 source .venv/bin/activate
 ```
 
----
-
-### 3️⃣ Install dependencies
-
+**Windows**
 ```bash
-pip install -r requirements.txt
+.venv\Scripts\activate
 ```
 
----
-
-### 4️⃣ Run full pipeline
+### 4. Install dependencies
 
 ```bash
-run.bat
+pip install -r requirement.txt
+pip install -e .
 ```
 
-This executes:
+### 5. Run the full pipeline
 
-1. Feature generation
-2. Autoencoder training
-3. Raw + latent clustering
-4. Cluster analytics
+```bash
+bash run.sh
+```
 
-All models and outputs are saved into `/artifacts`.
+This executes all four stages in order and saves models and outputs into `/artifacts`.
 
 ---
 
-## 🔁 Pipelines Explained
+## Pipeline Stages
 
-### **1. Feature Preparation**
+### Stage 1 — Feature Preparation
 
 ```bash
 python feature-preparation-pipeline.py
 ```
 
-What happens:
+- Downloads the dataset from Kaggle
+- Filters retailers by minimum activity and tenure thresholds
+- Builds behavioral features via `RetailClusteringFeatureBuilder`:
 
-* Downloads dataset from Kaggle
-* Filters retailers using:
+| Feature | Description |
+|---|---|
+| Stability | Consistency of sales volume over time |
+| Entropy | Diversity/randomness in purchasing patterns |
+| Growth | Trend direction and rate |
+| Seasonality | Periodic demand patterns |
+| Volume Consistency | Month-over-month variance in quantities |
 
-  * Minimum activity
-  * Tenure thresholds
-* Builds **behavioral features**:
-
-  * Stability
-  * Entropy
-  * Growth
-  * Seasonality
-  * Volume consistency
-
-These are not naive aggregates — they are **representation-learning-ready signals**.
+These are representation-learning-ready signals, not naive aggregates.
 
 ---
 
-### **2. Autoencoder Training**
+### Stage 2 — Autoencoder Training
 
 ```bash
 python autoencoder-training-pipeline.py
 ```
 
-What happens:
+Trains a deterministic `AutoEncoderModelArchitecture`:
 
-* Robust scaling
-* Deterministic Autoencoder training
-* Loss tracking
-* Model persistence
+- Symmetric feed-forward architecture (encoder → latent → decoder)
+- Linear latent space to preserve geometric structure for distance-based methods
+- Encoder-side L2 regularization to prevent identity mapping
+- Batch normalization in the encoder for training stability
+- Layer normalization on the latent space to control scale drift
+- MSE reconstruction objective with early stopping
 
-Outputs:
+Outputs saved to `/artifacts`:
+- `autoencoder-model.keras` — full trained autoencoder
+- `feature-scaler.pkl` — robust scaler fitted on training data
+- `loss-plot.png` — training/validation loss curve
 
-* Trained encoder/decoder
-* Scaler
-* Training curve
-
-This creates a **stable latent behavioral space**.
+> GPU is disabled by design for deterministic, reproducible CPU execution.
 
 ---
 
-### **3. Clustering Training**
+### Stage 3 — Clustering Training
 
 ```bash
 python clustering-training-pipeline.py
 ```
 
-Two clustering strategies are trained:
+Trains two HDBSCAN models for direct comparison:
 
-| Strategy             | Purpose             |
-| -------------------- | ------------------- |
-| Raw Feature HDBSCAN  | Baseline            |
-| Latent Space HDBSCAN | Production approach |
+| Strategy | Input | Purpose |
+|---|---|---|
+| Raw Feature HDBSCAN | Engineered features | Baseline |
+| Latent Space HDBSCAN | Autoencoder embeddings | Production approach |
 
-Both are saved for comparison and inference.
+Both models are saved to `/artifacts` for use in inference.
 
 ---
 
-### **4. Inference & Analytics**
+### Stage 4 — Inference & Analytics
 
 ```bash
 python clustering-inference-pipeline.py
 ```
 
-Generates:
+Generates full cluster analytics:
+- Cluster labels and membership strengths
+- Cluster size distributions
+- Noise ratios per strategy
+- Comparative distribution reports
 
-* Cluster labels
-* Membership strength
-* Cluster sizes
-* Noise ratios
-* Distribution reports
-
----
-
-## 📈 Key Results
-
-| Method       | Clusters | Noise  |
-| ------------ | -------- | ------ |
-| Raw Features | 2        | ~99.6% |
-| Latent Space | 4        | ~21.5% |
-
-This is **not** a tuning trick — it is a **systemic effect** of learning representations before clustering.
+Outputs saved to `/artifacts`:
+- `cluster_predictions.csv`
+- `cluster_insights.csv`
 
 ---
 
-## 🧩 Why Autoencoder + HDBSCAN?
+## Key Results
 
-Retail data is:
+| Method | Clusters | Noise Ratio |
+|---|---|---|
+| Raw Features | 2 | ~99.6% |
+| Latent Space | 4 | ~21.5% |
 
-* High dimensional
-* Sparse
-* Noisy
-* Non-linear
-
-Autoencoders:
-
-* Compress signal
-* Remove noise
-* Learn invariant behavioral structure
-
-HDBSCAN:
-
-* Handles density variation
-* Naturally models noise
-* Works well in learned manifolds
-
-This combination is **production-grade for segmentation**.
+This is **not** a hyperparameter tuning trick — it is a **systemic effect** of decoupling representation learning from clustering. The latent space forces the model to learn smooth, structured behavioral manifolds that HDBSCAN can meaningfully partition.
 
 ---
 
-## 🧪 Making this Production Ready
+## Why Autoencoder + HDBSCAN?
 
-This repository is already **architecture-ready** for real systems.
+FMCG retail data is high-dimensional, sparse, noisy, and non-linear. This combination addresses that directly:
 
-Here is how you would evolve it:
+**Autoencoder** — compresses signal, removes noise, and learns invariant behavioral structure that survives retraining cycles.
 
-### 🔹 Add MLflow
+**HDBSCAN** — handles variable cluster density, models noise as a first-class concept, and works well in learned latent manifolds where distance is more meaningful than in raw feature space.
 
-You can log:
+---
 
-* Autoencoder versions
-* Clustering models
-* Feature scalers
-* Metrics (noise %, cluster count, stability)
+## Extending to Production
 
-Example:
+The architecture is already designed with production evolution in mind.
+
+**Experiment Tracking — MLflow**
 
 ```python
 mlflow.log_model(autoencoder, "encoder")
-mlflow.log_metric("noise_ratio", noise)
+mlflow.log_metric("noise_ratio", noise_ratio)
+mlflow.log_metric("cluster_count", n_clusters)
 ```
 
----
+**Feature Store / Database**
 
-### 🔹 Add Feature Store / DB
+Replace CSV loading with a proper data layer:
+- Snowflake / BigQuery / Postgres for warehouse-backed features
+- Feast for time-travel and backfill-safe feature retrieval
 
-Replace:
+**Scheduled Batch Inference**
 
-```python
-df = load_from_csv()
-```
-
-With:
-
-* Snowflake
-* BigQuery
-* Postgres
-* Feast Feature Store
-
-This allows:
-
-* Backfills
-* Time-travel
-* Reproducible training
+The inference pipeline already supports new retailers and new months. Add:
+- A scheduler (Airflow / Dagster / Prefect)
+- A data sink (warehouse table / REST API)
 
 ---
 
-### 🔹 Add Batch Inference
+## Core Dependencies
 
-The inference pipeline already supports:
+| Package | Version | Role |
+|---|---|---|
+| TensorFlow | 2.15.1 | Autoencoder training |
+| hdbscan | 0.8.38.post2 | Density-based clustering |
+| scikit-learn | 1.4.2 | Preprocessing, metrics |
+| pandas | 2.2.2 | Data manipulation |
+| numpy | 1.26.4 | Numerical operations |
+| plotly + kaleido | 5.24.1 / 0.2.1 | Visualizations |
+| kaggle | 1.5.16 | Dataset download |
+| python-dotenv | 1.0.1 | Environment config |
 
-* New retailers
-* New months
-* Re-scoring into existing clusters
-
-You only need:
-
-* A scheduler (Airflow / Dagster)
-* A data sink (warehouse / API)
-
----
-
-## 🧠 What this repo demonstrates
-
-This project shows how to think like a **production data scientist**:
-
-* Not “best silhouette score”
-* Not “best k-means”
-* But **long-term stability, drift resistance, and cluster usability**
-
-This is exactly how **real retail segmentation platforms** are built.
+Full dependency list in `requirement.txt`.
 
 ---
 
-## 📚 Deep Technical Explanation
+## License
 
-Read the full system breakdown here:
-👉 [https://medium.com/aimonks/why-most-retail-customer-clusters-collapse-in-production-and-how-i-fixed-mine-122a412ceccf](https://medium.com/aimonks/why-most-retail-customer-clusters-collapse-in-production-and-how-i-fixed-mine-122a412ceccf)
+MIT License — see [LICENSE](./LICENSE) for details.
 
 ---
+
+## Deep Technical Write-Up
+
+For a full breakdown of the system design, failure modes of naive clustering, and the production reasoning behind this architecture:
+
+👉 [Why Most Retail Customer Clusters Collapse in Production — and How I Fixed Mine](https://medium.com/aimonks/why-most-retail-customer-clusters-collapse-in-production-and-how-i-fixed-mine-122a412ceccf)
